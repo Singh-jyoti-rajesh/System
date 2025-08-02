@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Register</title>
     <style>
@@ -32,7 +33,8 @@
             font-weight: bold;
         }
 
-        input, select {
+        input,
+        select {
             width: 100%;
             padding: 8px;
             margin-top: 5px;
@@ -64,6 +66,14 @@
             margin-bottom: 15px;
         }
 
+        .success {
+            background: #d1fae5;
+            color: #065f46;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+
         a {
             display: block;
             text-align: center;
@@ -76,73 +86,104 @@
             text-decoration: underline;
         }
 
-        #admin-key-section {
+        #admin-fields,
+        #user-fields {
             display: none;
         }
     </style>
 </head>
+
 <body>
+    <div class="register-container">
+        <h2>Register</h2>
 
-<div class="register-container">
-    <h2>Register</h2>
+        @if(session('success'))
+        <div class="success">{{ session('success') }}</div>
+        @endif
 
-    @if ($errors->any())
+        @if ($errors->any())
         <div class="error">
             <ul style="padding-left: 20px;">
                 @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
+                <li>{{ $error }}</li>
                 @endforeach
             </ul>
         </div>
-    @endif
+        @endif
 
-    <form method="POST" action="{{ route('register') }}">
-        @csrf
+        <form method="POST" action="{{ route('register') }}">
+            @csrf
 
-        <label>Name:</label>
-        <input type="text" name="name" required>
+            <label>Name</label>
+            <input type="text" name="name" value="{{ old('name') }}" required>
 
-        <label>Email:</label>
-        <input type="email" name="email" required>
+            <label>Email</label>
+            <input type="email" name="email" value="{{ old('email') }}" required>
 
-        <label>Password:</label>
-        <input type="password" name="password" required>
+            <label>Password</label>
+            <input type="password" name="password" required>
 
-        <label>Confirm Password:</label>
-        <input type="password" name="password_confirmation" required>
+            <label>Confirm Password</label>
+            <input type="password" name="password_confirmation" required>
 
-        <label>Role:</label>
-        <select name="role" required>
-            <option value="user">User</option>
-            <option value="admin">Admin</option>
-        </select>
+            <label>Role</label>
+            <select name="role" required onchange="toggleAdminFields(this.value)">
+                <option value="user" {{ old('role')==='user' ? 'selected' : '' }}>User</option>
+                <option value="admin" {{ old('role')==='admin' ? 'selected' : '' }}>Admin</option>
+            </select>
 
-        <div id="admin-key-section">
-            <label>Admin Secret Key:</label>
-            <input type="text" name="admin_secret_key">
-        </div>
+            <!-- Admin Fields -->
+            <div id="admin-fields">
+                <label>Admin Secret Key</label>
+                <input type="text" name="admin_secret_key" value="{{ old('admin_secret_key') }}">
 
-        <button type="submit">Register</button>
-    </form>
+                <label>Admin Invitation Code (Optional)</label>
+                <input type="text" name="admin_invitation_code" value="{{ old('admin_invitation_code') }}">
+            </div>
 
-    <a href="{{ route('login') }}">Already have an account? Login</a>
-</div>
+            <!-- User Field -->
+            <div id="user-fields">
+                <label>Invitation Code</label>
+                <input type="text" name="invitation_code" id="invitation_code_input"
+                    value="{{ old('invitation_code', $invitationCode ?? '') }}">
+            </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const roleField = document.querySelector('[name="role"]');
-        const keySection = document.getElementById('admin-key-section');
+            <button type="submit">Register</button>
+        </form>
 
-        roleField.addEventListener('change', function () {
-            keySection.style.display = this.value === 'admin' ? 'block' : 'none';
-        });
+        <a href="{{ route('login') }}">Already have an account? Login</a>
+    </div>
 
-        // Preserve admin section on form resubmission
-        if (roleField.value === 'admin') {
-            keySection.style.display = 'block';
+    <script>
+        function getCodeFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const codeFromQuery = urlParams.get('code');
+            const codeFromPath = window.location.pathname.split('/').pop();
+            return codeFromQuery || (codeFromPath.startsWith('jyoti_') ? codeFromPath : '');
         }
-    });
-</script>
 
+        function toggleAdminFields(role) {
+            const adminFields = document.getElementById('admin-fields');
+            const userFields = document.getElementById('user-fields');
+            const invitationInput = document.getElementById('invitation_code_input');
+
+            if (role === 'admin') {
+                adminFields.style.display = 'block';
+                userFields.style.display = 'none';
+            } else {
+                adminFields.style.display = 'none';
+                userFields.style.display = 'block';
+
+                if (invitationInput && !invitationInput.value) {
+                    invitationInput.value = getCodeFromURL();
+                }
+            }
+        }
+
+        window.onload = function () {
+            toggleAdminFields("{{ old('role', 'user') }}");
+        };
+    </script>
 </body>
+
 </html>
