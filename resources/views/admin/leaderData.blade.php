@@ -87,7 +87,7 @@
 
 <body>
 
-    <h1>User Dashboard</h1>
+    <h1>Leader Request Dashboard</h1>
 
     <table>
         <thead>
