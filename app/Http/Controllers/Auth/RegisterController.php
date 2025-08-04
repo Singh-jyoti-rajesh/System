@@ -18,7 +18,7 @@ class RegisterController extends Controller
             $code = request()->query('code');
         }
 
-        $admin = User::where('invitation_code', $code)->first(); 
+        $admin = User::where('invitation_code', $code)->first();
 
         return view('auth.register', [
             'invitationCode' => $admin ? $admin->invitation_code : ''

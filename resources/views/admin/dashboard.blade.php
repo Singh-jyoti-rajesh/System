@@ -201,7 +201,13 @@
                 <td>{{ str_pad($user->id, 3, '0', STR_PAD_LEFT) }}</td>
                 <td>{{ $user->name }}</td>
                 <td>{{ $user->email }}</td>
-                <td>{{ ucfirst($user->role) }}</td>
+                {{-- <td>{{ ucfirst($user->role) }}</td> --}}
+                <td>
+                    {{ ucfirst($user->role) }}
+                    @if($user->role === 'leader')
+                    <span style="color: green; font-weight: bold;"></span>
+                    @endif
+                </td>
                 <td>{{ $user->direct_subordinates_count ?? 0 }}</td>
                 <td>{{ $user->team_subordinates_count ?? 0 }}</td>
                 <td>₹{{ number_format($user->balance, 2) }}</td>

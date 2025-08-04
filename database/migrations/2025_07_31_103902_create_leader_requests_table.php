@@ -12,6 +12,7 @@ class CreateLeaderRequestsTable extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id'); // User who applied
             $table->unsignedBigInteger('sent_to'); // Admin ID
+            $table->string('role')->default('user');
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->timestamps();
 

@@ -16,14 +16,10 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
-            // $table->string('invitation_code')->unique()->nullable();
-            // $table->unsignedBigInteger('invited_by')->nullable();
             $table->string('password');
             $table->string('status')->default(0);
             $table->rememberToken();
             $table->timestamps();
-
-            // $table->foreign('invited_by')->references('id')->on('users')->onDelete('set null');
             $table->string('role')->default('user');
             $table->string('invitation_code')->unique();
             $table->unsignedBigInteger('invited_by')->nullable();
