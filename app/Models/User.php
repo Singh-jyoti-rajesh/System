@@ -17,6 +17,7 @@ class User extends Authenticatable
         'role',
         'invitation_code',
         'invited_by',
+        'wallet',
         'status', // 0 for default , 1 for leader apply  2. for reject leader apply  3. for accept leader apply
     ];
 

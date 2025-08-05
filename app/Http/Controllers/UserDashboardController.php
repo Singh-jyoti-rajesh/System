@@ -3,34 +3,46 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\LeaderRequest;
-use Illuminate\Http\Request;
 
 class UserDashboardController extends Controller
 {
+    // Redirect to userlist (prevents index error)
     public function index()
+    {
+        return redirect()->route('user.userlist');
+    }
+
+    // Function to get team subordinates recursively
+    private function getTeamSubordinates($user, $allUsers)
+    {
+        $team = collect();
+        $directs = $allUsers->where('invited_by', $user->id);
+        foreach ($directs as $sub) {
+            $team->push($sub);
+            $team = $team->merge($this->getTeamSubordinates($sub, $allUsers));
+        }
+        return $team;
+    }
+
+    // ✅ userlist page
+    public function userlist()
     {
         $currentUser = Auth::user();
         $allUsers = User::all();
-        function getTeamSubordinates($user, $allUsers)
-        {
-            $team = collect();
-            $directs = $allUsers->where('invited_by', $user->id);
-            foreach ($directs as $sub) {
-                $team->push($sub);
-                $team = $team->merge(getTeamSubordinates($sub, $allUsers));
-            }
-            return $team;
-        }
+
         $userTree = collect();
         $usersToDisplay = $currentUser->role === 'admin'
             ? $allUsers
             : collect([$currentUser]);
+
         foreach ($usersToDisplay as $user) {
             $inviter = $allUsers->firstWhere('id', $user->invited_by);
             $directSubordinates = $allUsers->where('invited_by', $user->id);
-            $teamSubordinates = getTeamSubordinates($user, $allUsers);
+            $teamSubordinates = $this->getTeamSubordinates($user, $allUsers);
+
             $userTree->push([
                 'uid' => $user->id,
                 'name' => $user->name,
@@ -42,13 +54,15 @@ class UserDashboardController extends Controller
                 'team_count' => $teamSubordinates->count(),
                 'invited_by_qualifies' => $inviter && (
                     $allUsers->where('invited_by', $inviter->id)->count() >= 5 ||
-                    getTeamSubordinates($inviter, $allUsers)->count() >= 10
+                    $this->getTeamSubordinates($inviter, $allUsers)->count() >= 10
                 )
             ]);
         }
-        return view('user.dashboard', compact('userTree'));
+
+        return view('user.memberlist.userlist', compact('userTree'));
     }
 
+    // Apply leader request
     public function applyLeader(Request $request)
     {
         $user = Auth::user();
