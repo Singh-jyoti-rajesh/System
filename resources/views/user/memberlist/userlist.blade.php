@@ -2,8 +2,6 @@
 
 @section('content')
 
-
-
 <script>
     function openModal() {
             const confirmApply = confirm("Do you want to apply for leader?");

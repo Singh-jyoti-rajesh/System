@@ -9,23 +9,40 @@ use Illuminate\Support\Facades\Auth;
 
 class AdminDashboardController extends Controller
 {
+    // public function index()
+    // {
+    //     $users = User::withCount(['directSubordinates'])->get();
+
+    //     foreach ($users as $user) {
+    //         $user->team_subordinates_count = count($this->getTeamSubordinates($user));
+    //     }
+
+    //     $totalWallet = $users->sum(function ($user) {
+    //         return $user->wallet ?? 0; // Sum of the 'wallet' column
+    //     });
+
+    //     $totalMember = $users->count(); // ✅ Correct variable name
+
+    //     return view('admin.dashboard', compact('users', 'totalWallet', 'totalMember'));
+    // }
+
     public function index()
     {
-        $users = User::withCount(['directSubordinates'])->get();
+        // Only admin users
+        $users = User::where('role', 'admin')->withCount(['directSubordinates'])->get();
 
         foreach ($users as $user) {
             $user->team_subordinates_count = count($this->getTeamSubordinates($user));
         }
 
         $totalWallet = $users->sum(function ($user) {
-            return $user->wallet ?? 0; // Sum of the 'wallet' column
+            return $user->wallet ?? 0;
         });
 
-        $totalMember = $users->count(); // ✅ Correct variable name
+        $totalMember = $users->count();
 
         return view('admin.dashboard', compact('users', 'totalWallet', 'totalMember'));
     }
-
 
 
     private function getTeamSubordinates($user)
@@ -45,8 +62,18 @@ class AdminDashboardController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return view('admin.dashboard', compact('requests'));
+        return view('admin.memberlist.adminlist', compact('requests'));
     }
+    // public function showLeaderRequests()
+    // {
+    //     $users = User::withCount(['directSubordinates'])->get();
+
+    //     foreach ($users as $user) {
+    //         $user->team_subordinates_count = count($this->getTeamSubordinates($user));
+    //     }
+
+    //     return view('admin.memberlist.adminlist', compact('users'));
+    // }
 
     public function updateLeaderRequest(Request $request, $id)
     {
@@ -89,7 +116,7 @@ class AdminDashboardController extends Controller
     {
         $user = User::findOrFail($id);
         $user->delete();
-        return redirect()->route('admin.memberlist.adminlist')->with('success', 'User deleted successfully.');
+        return redirect()->route('admin.adminlist')->with('success', 'User deleted successfully.');
     }
 
     public function promotion()

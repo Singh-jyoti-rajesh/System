@@ -134,6 +134,7 @@ class RegisterController extends Controller
             return redirect()->route('admin.dashboard')->with('success', 'Registration successful. Welcome!');
         }
 
-        return redirect()->route('user.dashboard')->with('success', 'Registration successful. Welcome!');
+        // return redirect()->route('user.dashboard')->with('success', 'Registration successful. Welcome!');
+        return redirect()->route('login')->with('success', 'Registration successful. Please login.');
     }
 }

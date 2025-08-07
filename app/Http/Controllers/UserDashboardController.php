@@ -12,8 +12,11 @@ class UserDashboardController extends Controller
     // Redirect to userlist (prevents index error)
     public function index()
     {
-        return redirect()->route('user.userlist');
+
+        // return redirect()->route('user.userlist');
+        return redirect()->route('user.landing');
     }
+
 
     // Function to get team subordinates recursively
     private function getTeamSubordinates($user, $allUsers)
@@ -71,4 +74,8 @@ class UserDashboardController extends Controller
 
         return response()->json(['success' => true, 'message' => 'Request submitted']);
     }
+    // public function landing()
+    // {
+    //     return view('user.landing_page');
+    // }
 }

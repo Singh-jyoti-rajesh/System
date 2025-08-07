@@ -1,11 +1,56 @@
 @extends('admin.layouts.app')
 
 @section('content')
+<style>
+    .apply-btn {
+        position: absolute;
+        left: 1100px;
+        top: 146px;
+        padding: 10px 20px;
+        background: linear-gradient(45deg, #4facfe, #00f2fe);
+        color: white;
+        border: none;
+        border-radius: 25px;
+        cursor: pointer;
+        font-weight: bold;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .game-btn {
+        position: absolute;
+        left: 250px;
+        top: 146px;
+        padding: 10px 20px;
+        background: linear-gradient(45deg, #ff416c, #ff4b2b);
+        color: white;
+        border: none;
+        border-radius: 25px;
+        cursor: pointer;
+        font-weight: bold;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+</style>
 <h2>Admin Dashboard</h2>
 
 <!-- Search Box -->
-<div class="search-container" >
+<div class="search-container">
     <input type="text" id="searchInput" placeholder="Search by UID or User Type...">
+</div>
+<!-- Game Button (Left Side) -->
+<a href="{{ route('user.dashboard30') }}"><button class="game-btn"> Game</button></a>
+<!-- Leader Request Button -->
+<button class="apply-btn" onclick="openModal()">Leader Request</button>
+{{-- <a href="{{ route('admin.leader.request') }}"><button class="apply-btn">Leader Request</button></a> --}}
+{{-- <a href="{{ url('admin/leader-request') }}"><button class="apply-btn">Leader Request</button></a> --}}
+<!-- Modal -->
+<div id="leaderModal" class="modal" onclick="closeModalOutside(event)">
+    <div class="modal-content">
+        <h3>Leader Request</h3>
+        <div class="modal-buttons">
+            <button class="approve-btn" onclick="approveRequest()">Approve</button>
+            <button class="reject-btn" onclick="rejectRequest()">Reject</button>
+        </div>
+    </div>
 </div>
 
 <!-- Scrollable Table -->
@@ -59,5 +104,30 @@
             }
         });
     });
+
+        function openModal() {
+                document.getElementById('leaderModal').style.display = 'block';
+            }
+    
+            function closeModal() {
+                document.getElementById('leaderModal').style.display = 'none';
+            }
+    
+            function closeModalOutside(event) {
+                if (event.target.id === 'leaderModal') {
+                    closeModal();
+                }
+            }
+    
+            function approveRequest() {
+                alert("Leader request approved!");
+                closeModal();
+            }
+    
+            function rejectRequest() {
+                alert("Leader request rejected.");
+                closeModal();
+            }
+    
 </script>
 @endsection

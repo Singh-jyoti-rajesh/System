@@ -18,7 +18,7 @@
             <td>{{ str_pad($user->id, 3, '0', STR_PAD_LEFT) }}</td>
             <td>{{ $user->name }}</td>
             <td>{{ $user->email }}</td>
-            <td>Leader</td>
+            <td>Approved</td>
         </tr>
         @endforeach
     </tbody>
